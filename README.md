@@ -105,6 +105,10 @@ Each script:
 
 Both values come from your Discord app: the **Application ID** is on the *General Information* page and the bot **Token** on the *Bot* page. The [Getting Started guide](https://docs.discord.com/developers/quick-start/getting-started) walks you through creating an app and copying them.
 
+## Adding the bot to a server
+
+The bot registers its scripts as slash commands, so it needs the **"Use Bot Commands"** permission to run them. See the [guide for adding the bot to a server](docs/bot-adding.md) — it lists only the one setting you need and links to Discord's official docs for the rest.
+
 ## Development
 
 Use the Makefile.

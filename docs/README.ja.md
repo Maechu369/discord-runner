@@ -103,6 +103,10 @@ echo "MII3.YourTokenHere.example" > token.txt
 
 両方ともDiscordアプリから取得できます。**Application ID** は*General Information*ページ、ボットの**Token** は*Bot*ページで確認できます。アプリの作成と値の取得方法は[Getting Startedガイド](https://docs.discord.com/developers/quick-start/getting-started)をご覧ください。
 
+## ボットをサーバに追加する
+
+ボットはスクリプトをスラッシュコマンドとして登録するため、実行には「**スラッシュコマンドの使用**」権限が必要です。[ボットをサーバに追加する手順](docs/bot-adding.ja.md)ご覧ください。必要な設定はこれのみで、その他の手順は Discord 公式ドキュメントに委ねています。
+
 ## 開発
 
 Makefile を使います。
