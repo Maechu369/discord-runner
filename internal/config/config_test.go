@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"bytes"
@@ -124,12 +124,67 @@ func TestFormatValue(t *testing.T) {
 	}
 }
 
+func TestLoadConfigValid(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+	content := `{
+		"token": "test-token",
+		"client_id": "test-client",
+		"scripts": {
+			"script1": {"cwd": "~", "cmd": ["echo", "hi"]}
+		}
+	}`
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := LoadConfig(path)
+	if err != nil {
+		t.Fatalf("LoadConfig: %v", err)
+	}
+	if cfg.Token != "test-token" || cfg.ClientID != "test-client" {
+		t.Errorf("unexpected config: %+v", cfg)
+	}
+	s, ok := cfg.Scripts["script1"]
+	if !ok {
+		t.Fatal("script1 missing from config")
+	}
+	if s.Cwd != "~" || len(s.Cmd) != 2 || s.Cmd[0] != "echo" || s.Cmd[1] != "hi" {
+		t.Errorf("unexpected script: %+v", s)
+	}
+}
+
+func TestLoadConfigErrors(t *testing.T) {
+	dir := t.TempDir()
+	cases := map[string]string{
+		"missing file":   "",
+		"invalid JSON":   `not json`,
+		"missing token":  `{"client_id": "c", "scripts": {}}`,
+		"missing client": `{"token": "t", "scripts": {}}`,
+		"no scripts":     `{"token": "t", "client_id": "c"}`,
+	}
+	for name, content := range cases {
+		t.Run(name, func(t *testing.T) {
+			var path string
+			if content != "" {
+				path = filepath.Join(dir, name+".json")
+				if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if _, err := LoadConfig(path); err == nil {
+				t.Fatalf("expected error for %s, got nil", name)
+			}
+		})
+	}
+}
+
 func TestCmdInitWritesTemplate(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "config.json")
 
-	if err := cmdInit(path); err != nil {
-		t.Fatalf("cmdInit: %v", err)
+	if err := Init(path); err != nil {
+		t.Fatalf("Init: %v", err)
 	}
 
 	got, err := os.ReadFile(path)
@@ -154,7 +209,7 @@ func TestCmdInitRefusesOverwrite(t *testing.T) {
 		t.Fatalf("seed file: %v", err)
 	}
 
-	if err := cmdInit(path); err == nil {
+	if err := Init(path); err == nil {
 		t.Fatal("expected error overwriting existing file, got nil")
 	}
 

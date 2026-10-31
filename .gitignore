@@ -3,4 +3,4 @@ discord-runner
 # Ignore all JSON files.
 # Exception: the init template must stay tracked.
 *.json
-!templates/config.template.json
+!internal/config/templates/config.template.json
