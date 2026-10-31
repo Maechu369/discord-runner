@@ -150,24 +150,30 @@ func Flatten(path string) error {
 	return nil
 }
 
+// ListOutput returns the formatted list of slash commands defined by the config,
+// with names in sorted order and the command each one runs. It is the single
+// source of truth shared by the "list" CLI command and the built-in /list slash
+// command.
+func (c *Config) ListOutput() string {
+	names := c.CommandNames()
+	out := &bytes.Buffer{}
+	fmt.Fprintf(out, "%d command(s):\n", len(names))
+	for _, name := range names {
+		fmt.Fprintf(out, "  /%s  %s\n", name, strings.Join(c.Scripts[name].Cmd, " "))
+	}
+	return out.String()
+}
+
 // List reads, validates, and prints the slash commands defined by the config at
 // path. It intentionally does not connect to Discord: it reports what the
 // config would register, so it works offline and before a token is valid.
-// Names are printed in sorted order with the command each one runs.
 func List(path string) error {
 	cfg, err := LoadConfig(path)
 	if err != nil {
 		return err
 	}
 
-	names := cfg.CommandNames()
-	out := &bytes.Buffer{}
-	fmt.Fprintf(out, "%d command(s):\n", len(names))
-	for _, name := range names {
-		fmt.Fprintf(out, "  /%s  %s\n", name, strings.Join(cfg.Scripts[name].Cmd, " "))
-	}
-
-	if _, err := os.Stdout.Write(out.Bytes()); err != nil {
+	if _, err := os.Stdout.Write([]byte(cfg.ListOutput())); err != nil {
 		return fmt.Errorf("failed to write output: %v", err)
 	}
 	return nil

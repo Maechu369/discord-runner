@@ -49,13 +49,25 @@ func RunBot(configPath string) error {
 		}
 	})
 
-	cmds := make([]*discordgo.ApplicationCommand, 0, len(cfg.Scripts))
+	cmds := make([]*discordgo.ApplicationCommand, 0, len(cfg.Scripts)+1)
+	registered := []string{"list"}
+	cmds = append(cmds, &discordgo.ApplicationCommand{
+		Name:        "list",
+		Description: "List the slash commands defined in the config",
+		Type:        discordgo.ChatApplicationCommand,
+	})
 	for name := range cfg.Scripts {
+		// The built-in "list" command owns the name; skip a script that would
+		// otherwise collide and make the bulk overwrite fail.
+		if name == "list" {
+			continue
+		}
 		cmds = append(cmds, &discordgo.ApplicationCommand{
 			Name:        name,
 			Description: fmt.Sprintf("Run the %q script", name),
 			Type:        discordgo.ChatApplicationCommand,
 		})
+		registered = append(registered, name)
 	}
 	if _, err := session.ApplicationCommandBulkOverwrite(cfg.ClientID, "", cmds); err != nil {
 		return wrapRESTErr("failed to register slash commands", err)
@@ -66,7 +78,7 @@ func RunBot(configPath string) error {
 	}
 
 	fmt.Printf("discord-runner is online. %d slash command(s) registered:\n", len(cmds))
-	for name := range cfg.Scripts {
+	for _, name := range registered {
 		fmt.Printf("  /%s\n", name)
 	}
 
@@ -85,6 +97,12 @@ func handleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate, cf
 	data, ok := commandData(i)
 	if !ok {
 		respondImmediate(s, i, "Unsupported interaction")
+		return
+	}
+
+	// The "list" command is a built-in, not a config script.
+	if data.Name == "list" {
+		respondImmediate(s, i, formatOutput(cfg.ListOutput()))
 		return
 	}
 

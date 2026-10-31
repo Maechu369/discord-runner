@@ -313,6 +313,19 @@ func TestListErrors(t *testing.T) {
 	}
 }
 
+// TestListOutput covers the renderer shared by the built-in /list slash command.
+// It validates sorting and formatting independently of the CLI stdout path.
+func TestListOutput(t *testing.T) {
+	cfg := &Config{Scripts: map[string]Script{
+		"zeta":  {Cmd: []string{"echo", "z"}},
+		"alpha": {Cmd: []string{"echo", "a"}},
+	}}
+	want := "2 command(s):\n  /alpha  echo a\n  /zeta  echo z\n"
+	if got := cfg.ListOutput(); got != want {
+		t.Errorf("ListOutput =\n%q\nwant\n%q", got, want)
+	}
+}
+
 // captureStdout redirects os.Stdout during fn and returns everything written.
 func captureStdout(t *testing.T, fn func()) string {
 	t.Helper()
