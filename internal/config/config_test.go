@@ -381,6 +381,17 @@ func TestListOutput(t *testing.T) {
 	}
 }
 
+func TestListOutputWithDescription(t *testing.T) {
+	cfg := &Config{Scripts: map[string]Script{
+		"hello": {Cmd: []string{"echo", "hi"}, Description: "Say hello"},
+		"plain": {Cmd: []string{"echo", "x"}},
+	}}
+	want := "2 command(s):\n  /hello  Say hello\n  /plain  echo x\n"
+	if got := cfg.ListOutput(); got != want {
+		t.Errorf("ListOutput =\n%q\nwant\n%q", got, want)
+	}
+}
+
 // captureStdout redirects os.Stdout during fn and returns everything written.
 func captureStdout(t *testing.T, fn func()) string {
 	t.Helper()

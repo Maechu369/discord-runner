@@ -163,9 +163,19 @@ func (c *Config) ListOutput() string {
 	out := &bytes.Buffer{}
 	fmt.Fprintf(out, "%d command(s):\n", len(names))
 	for _, name := range names {
-		fmt.Fprintf(out, "  /%s  %s\n", name, strings.Join(c.Scripts[name].Cmd, " "))
+		fmt.Fprintf(out, "  /%s  %s\n", name, listContent(c.Scripts[name]))
 	}
 	return out.String()
+}
+
+// listContent returns what the list output shows for a script: its
+// description when set, otherwise the joined command so the reader still
+// sees what the command runs.
+func listContent(s Script) string {
+	if s.Description != "" {
+		return s.Description
+	}
+	return strings.Join(s.Cmd, " ")
 }
 
 // List reads, validates, and prints the slash commands defined by the config at
