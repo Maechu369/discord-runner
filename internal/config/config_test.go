@@ -217,6 +217,34 @@ func TestLoadConfigErrors(t *testing.T) {
 	}
 }
 
+func TestLoadConfigGuildID(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+	tokenPath := filepath.Join(dir, "token.txt")
+	if err := os.WriteFile(tokenPath, []byte("test-token"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	content := fmt.Sprintf(`{
+		"token_file": %q,
+		"client_id": "test-client",
+		"guild_id": "123456789",
+		"scripts": {
+			"script1": {"cwd": "~", "cmd": ["echo", "hi"]}
+		}
+	}`, tokenPath)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := LoadConfig(path)
+	if err != nil {
+		t.Fatalf("LoadConfig: %v", err)
+	}
+	if cfg.GuildID != "123456789" {
+		t.Errorf("guild_id = %q, want %q", cfg.GuildID, "123456789")
+	}
+}
+
 func TestCmdInitWritesTemplate(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "config.json")

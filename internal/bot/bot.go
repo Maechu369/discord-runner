@@ -69,7 +69,7 @@ func RunBot(configPath string) error {
 		})
 		registered = append(registered, name)
 	}
-	if _, err := session.ApplicationCommandBulkOverwrite(cfg.ClientID, "", cmds); err != nil {
+	if _, err := session.ApplicationCommandBulkOverwrite(cfg.ClientID, cfg.GuildID, cmds); err != nil {
 		return wrapRESTErr("failed to register slash commands", err)
 	}
 

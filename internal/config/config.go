@@ -33,6 +33,7 @@ type Config struct {
 	TokenFile string            `json:"token_file"`
 	Token     string            `json:"-"` // populated by LoadConfig from TokenFile; never read from JSON
 	ClientID  string            `json:"client_id"`
+	GuildID   string            `json:"guild_id"`
 	Scripts   map[string]Script `json:"scripts"`
 }
 

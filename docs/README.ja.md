@@ -88,6 +88,7 @@ echo "MII3.YourTokenHere.example" > token.txt
 | --- | --- |
 | `token_file` | ボットのトークンを含むファイルへのパス ([公式ドキュメントで確認](https://docs.discord.com/developers/quick-start/getting-started)) |
 | `client_id` | Discord アプリケーションのクライアント ID ([確認方法](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
+| `guild_id` | 任意の Discord サーバ ID。空ならグローバル（全サーバ）に登録され、サーバ ID を指定するとそのサーバだけに登録されます |
 | `scripts` | スラッシュコマンド名 → スクリプトのマップ |
 
 各スクリプト:

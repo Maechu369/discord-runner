@@ -1,6 +1,7 @@
 {
 	"token_file": ">>Path to token file (secret)<<",
 	"client_id": ">>Your Client ID<<",
+	"guild_id": "",
 	"scripts": {
 		"script1": {
 			"cwd": "~",
