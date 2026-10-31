@@ -29,7 +29,7 @@ func main() {
 		// `config` groups the config helpers: `config init` and
 		// `config flatten <config.json>`.
 		if len(os.Args) < 3 {
-			fmt.Fprint(os.Stderr, usage)
+			fmt.Fprint(os.Stderr, configUsage)
 			os.Exit(2)
 		}
 		switch os.Args[2] {
@@ -51,7 +51,7 @@ func main() {
 				os.Exit(1)
 			}
 		default:
-			fmt.Fprint(os.Stderr, usage)
+			fmt.Fprint(os.Stderr, configUsage)
 			os.Exit(2)
 		}
 	default:
@@ -87,9 +87,16 @@ func arg(name string, idx int) string {
 const usage = `discord-runner - a Discord bot that runs local commands
 
 usage:
-  discord-runner [start] <config.json>   run the Discord bot (default: start)
-  discord-runner config init [path]      generate an initial config (default: config.json)
-  discord-runner config flatten <config.json>   print a JSON config as key=value
+  discord-runner [start] <config.json>
+      Run the Discord bot from the given config.
+      When no subcommand is given, "start" is assumed.
+
+  discord-runner config init [path]
+      Generate an initial config from the embedded template.
+      Default path is config.json.
+
+  discord-runner config flatten <config.json>
+      Read a config file and print it as key=value lines.
 `
 
 const configUsage = `config commands:
