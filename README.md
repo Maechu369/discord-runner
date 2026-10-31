@@ -141,3 +141,7 @@ nix develop   # dev shell with hooks
 │   └── bot/                         # Discord bot behavior
 └── Makefile
 ```
+
+## License
+
+This project is licensed under the terms of the [MIT license](LICENSE).

@@ -139,3 +139,7 @@ nix develop   # フック付きの開発シェル
 │   └── bot/                         # Discord ボットの動作
 └── Makefile
 ```
+
+## ライセンス
+
+このプロジェクトは [MIT ライセンス](LICENSE) の下で利用可能です。
