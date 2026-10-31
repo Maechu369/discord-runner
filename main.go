@@ -15,6 +15,10 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "--help", "-h":
+		// Show usage. Same text as running without arguments.
+		fmt.Fprint(os.Stdout, usage)
+		os.Exit(0)
 	case "start":
 		// Run the Discord bot from the given config.
 		if err := bot.RunBot(arg("start", 2)); err != nil {
