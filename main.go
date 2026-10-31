@@ -78,7 +78,7 @@ func configArg(name string, idx int) (string, error) {
 func arg(name string, idx int) string {
 	p, err := configArg(name, idx)
 	if err != nil {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
 	}
 	return p
