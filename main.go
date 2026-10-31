@@ -43,14 +43,25 @@ func main() {
 	}
 }
 
-// arg returns the positional argument for a subcommand, exiting with
-// usage when it is missing.
+// configArg returns the config path that follows the subcommand in
+// os.Args (os.Args[2]). name is used only in the usage message when the
+// path is absent.
+func configArg(name string) (string, error) {
+	if len(os.Args) < 3 {
+		return "", fmt.Errorf("usage: discord-runner %s <config.json>\n", name)
+	}
+	return os.Args[2], nil
+}
+
+// arg returns the config path for a subcommand, exiting with usage when
+// it is missing.
 func arg(name string) string {
-	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "usage: discord-runner %s <config.json>\n", name)
+	p, err := configArg(name)
+	if err != nil {
+		fmt.Fprint(os.Stderr, err)
 		os.Exit(2)
 	}
-	return os.Args[1]
+	return p
 }
 
 const usage = `discord-runner - a Discord bot that runs local commands
