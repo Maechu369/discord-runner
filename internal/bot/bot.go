@@ -50,16 +50,16 @@ func RunBot(configPath string) error {
 	})
 
 	cmds := make([]*discordgo.ApplicationCommand, 0, len(cfg.Scripts)+1)
-	registered := []string{"list"}
+	registered := []string{"scripts"}
 	cmds = append(cmds, &discordgo.ApplicationCommand{
-		Name:        "list",
-		Description: "List the slash commands defined in the config",
+		Name:        "scripts",
+		Description: "List the scripts defined in the config",
 		Type:        discordgo.ChatApplicationCommand,
 	})
 	for name := range cfg.Scripts {
-		// The built-in "list" command owns the name; skip a script that would
+		// The built-in "scripts" command owns the name; skip a script that would
 		// otherwise collide and make the bulk overwrite fail.
-		if name == "list" {
+		if name == "scripts" {
 			continue
 		}
 		cmds = append(cmds, &discordgo.ApplicationCommand{
@@ -100,8 +100,8 @@ func handleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate, cf
 		return
 	}
 
-	// The "list" command is a built-in, not a config script.
-	if data.Name == "list" {
+	// The "scripts" command is a built-in, not a config script.
+	if data.Name == "scripts" {
 		respondImmediate(s, i, formatOutput(cfg.ListOutput()))
 		return
 	}
