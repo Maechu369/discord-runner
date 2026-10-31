@@ -133,8 +133,9 @@ func handleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate, cf
 		log.Printf("run %q: %v", data.Name, err)
 	}
 
+	content := formatOutput(out)
 	if _, err := s.InteractionResponseEdit(i.Interaction, &discordgo.WebhookEdit{
-		Content: new(formatOutput(out)),
+		Content: &content,
 	}); err != nil {
 		log.Printf("edit %q: %v", data.Name, err)
 	}
