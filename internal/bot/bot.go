@@ -48,11 +48,11 @@ func RunBot(configPath string) error {
 		})
 	}
 	if _, err := session.ApplicationCommandBulkOverwrite(cfg.ClientID, "", cmds); err != nil {
-		return fmt.Errorf("failed to register slash commands: %v", err)
+		return wrapRESTErr("failed to register slash commands", err)
 	}
 
 	if err := session.Open(); err != nil {
-		return fmt.Errorf("failed to connect to Discord: %v", err)
+		return wrapRESTErr("failed to connect to Discord", err)
 	}
 
 	fmt.Printf("discord-runner is online. %d slash command(s) registered:\n", len(cmds))

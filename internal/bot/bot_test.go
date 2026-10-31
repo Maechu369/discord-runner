@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -8,6 +10,7 @@ import (
 	"unicode/utf8"
 
 	"discord-runner/internal/config"
+	"github.com/bwmarrin/discordgo"
 )
 
 func TestRunScriptEcho(t *testing.T) {
@@ -117,5 +120,59 @@ func TestFormatOutputTruncates(t *testing.T) {
 	}
 	if !strings.HasSuffix(got, "…") {
 		t.Errorf("expected truncation ellipsis, got tail %q", got[len(got)-2:])
+	}
+}
+
+func newRESTErr(status int) *discordgo.RESTError {
+	return &discordgo.RESTError{
+		Response: &http.Response{
+			StatusCode: status,
+			Status:     http.StatusText(status),
+			Proto:      "HTTP/1.1",
+			ProtoMajor: 1,
+			ProtoMinor: 1,
+		},
+	}
+}
+
+func TestWrapRESTErrNil(t *testing.T) {
+	if err := wrapRESTErr("op", nil); err != nil {
+		t.Errorf("wrapRESTErr(nil) = %v, want nil", err)
+	}
+}
+
+func TestWrapRESTErrNonREST(t *testing.T) {
+	got := wrapRESTErr("op", fmt.Errorf("boom"))
+	if got.Error() != "op: boom" {
+		t.Errorf("wrapRESTErr(non-REST) = %q, want %q", got, "op: boom")
+	}
+}
+
+func TestWrapRESTErrUnauthorized(t *testing.T) {
+	got := wrapRESTErr("op", newRESTErr(http.StatusUnauthorized))
+	for _, sub := range []string{"unauthorized", "HTTP 401", "bot token", "Original error"} {
+		if !strings.Contains(got.Error(), sub) {
+			t.Errorf("wrapRESTErr(401) message %q missing %q", got, sub)
+		}
+	}
+}
+
+func TestWrapRESTErrForbidden(t *testing.T) {
+	got := wrapRESTErr("op", newRESTErr(http.StatusForbidden))
+	for _, sub := range []string{"forbidden", "HTTP 403", "Original error"} {
+		if !strings.Contains(got.Error(), sub) {
+			t.Errorf("wrapRESTErr(403) message %q missing %q", got, sub)
+		}
+	}
+}
+
+func TestWrapRESTErrOtherStatus(t *testing.T) {
+	got := wrapRESTErr("op", newRESTErr(http.StatusInternalServerError))
+	msg := got.Error()
+	if strings.Contains(msg, "HTTP 401") || strings.Contains(msg, "HTTP 403") {
+		t.Errorf("wrapRESTErr(500) should not use auth hint: %q", msg)
+	}
+	if !strings.HasPrefix(msg, "op:") {
+		t.Errorf("wrapRESTErr(500) = %q, want prefix %q", msg, "op:")
 	}
 }
