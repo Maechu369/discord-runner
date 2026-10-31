@@ -90,7 +90,7 @@ The token is read from that file when the bot starts and is never written back.
 | --- | --- |
 | `token_file` | Path to a file containing the bot token ([get it from the official docs](https://docs.discord.com/developers/quick-start/getting-started)) |
 | `client_id` | Discord application client ID ([how to find it](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
-| `guild_id` | Optional Discord server ID. Empty registers commands globally (all servers); set it to register commands only in that server |
+| `guild_id` | Optional Discord server ID. Empty registers commands globally (all servers); set it to register commands only in that server ([how to find it](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
 | `scripts` | Map of slash command name to script |
 
 Each script:
