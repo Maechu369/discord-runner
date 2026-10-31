@@ -313,7 +313,7 @@ func TestListErrors(t *testing.T) {
 	}
 }
 
-// TestListOutput covers the renderer shared by the built-in /scripts slash command.
+// TestListOutput covers the renderer shared by the built-in /list slash command.
 // It validates sorting and formatting independently of the CLI stdout path.
 func TestListOutput(t *testing.T) {
 	cfg := &Config{Scripts: map[string]Script{

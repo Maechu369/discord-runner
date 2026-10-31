@@ -152,7 +152,7 @@ func Flatten(path string) error {
 
 // ListOutput returns the formatted list of slash commands defined by the config,
 // with names in sorted order and the command each one runs. It is the single
-// source of truth shared by the "list" CLI command and the built-in /scripts slash
+// source of truth shared by the "list" CLI command and the built-in /list slash
 // command.
 func (c *Config) ListOutput() string {
 	names := c.CommandNames()
