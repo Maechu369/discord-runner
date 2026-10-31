@@ -40,7 +40,7 @@
               };
             };
           };
-          devShells.default = pkgs.mkShellNoCC {
+          devShells.default = pkgs.mkShell {
             shellHook = ''
               ${config.pre-commit.shellHook}
               ${pkgs.git-secrets}/bin/git-secrets --register-aws

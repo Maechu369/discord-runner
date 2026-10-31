@@ -1,0 +1,13 @@
+{
+  "token": "abc123",
+  "bot": {
+    "name": "Runner",
+    "presence": true
+  },
+  "channels": ["111", "222", "333"],
+  "limits": {
+    "maxRetries": 5,
+    "timeout": 1.5,
+    "metadata": null
+  }
+}
