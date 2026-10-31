@@ -110,7 +110,8 @@ const configUsage = `config commands:
 
 config file:
 
-  token       Bot token
+  token_file  Path to a file containing the bot token. The token is read
+              from that file at startup, never from the config itself.
   client_id   Discord client/application ID
   scripts     Map of slash command name to script. Each script has:
                 cmd      Command to run: [executable, args...]

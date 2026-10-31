@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -29,9 +30,10 @@ type Script struct {
 
 // Config is the on-disk bot configuration.
 type Config struct {
-	Token    string            `json:"token"`
-	ClientID string            `json:"client_id"`
-	Scripts  map[string]Script `json:"scripts"`
+	TokenFile string            `json:"token_file"`
+	Token     string            `json:"-"` // populated by LoadConfig from TokenFile; never read from JSON
+	ClientID  string            `json:"client_id"`
+	Scripts   map[string]Script `json:"scripts"`
 }
 
 // LoadConfig reads and validates the bot configuration.
@@ -45,8 +47,8 @@ func LoadConfig(path string) (*Config, error) {
 	if err := json.Unmarshal(data, &cfg); err != nil {
 		return nil, fmt.Errorf("invalid JSON in %q: %v", path, err)
 	}
-	if cfg.Token == "" {
-		return nil, fmt.Errorf("config %q: missing token", path)
+	if cfg.TokenFile == "" {
+		return nil, fmt.Errorf("config %q: missing token_file", path)
 	}
 	if cfg.ClientID == "" {
 		return nil, fmt.Errorf("config %q: missing client_id", path)
@@ -59,7 +61,46 @@ func LoadConfig(path string) (*Config, error) {
 			return nil, fmt.Errorf("config %q: script %q timeout must not be negative", path, name)
 		}
 	}
+
+	token, err := loadToken(cfg.TokenFile)
+	if err != nil {
+		return nil, err
+	}
+	cfg.Token = token
 	return &cfg, nil
+}
+
+// loadToken reads the bot token from the file named by p. A leading "~" is
+// expanded to the home directory and surrounding whitespace is trimmed so a
+// file written with `echo` still yields a clean token.
+func loadToken(p string) (string, error) {
+	p = expandHome(p)
+	data, err := os.ReadFile(p)
+	if err != nil {
+		return "", fmt.Errorf("failed to read token file %q: %v", p, err)
+	}
+	token := strings.TrimSpace(string(data))
+	if token == "" {
+		return "", fmt.Errorf("token file %q is empty", p)
+	}
+	return token, nil
+}
+
+// expandHome resolves a leading "~" in p to the user's home directory so
+// that "~/.discord-runner/token" style paths work. It returns p unchanged
+// when the home directory cannot be determined.
+func expandHome(p string) string {
+	if !strings.HasPrefix(p, "~") {
+		return p
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return p
+	}
+	if p == "~" {
+		return home
+	}
+	return filepath.Join(home, p[1:])
 }
 
 // Init writes the embedded template config to path. It refuses to

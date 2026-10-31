@@ -52,12 +52,24 @@ make build
 
 ## 設定ファイル
 
-JSON 形式です。`token` と `client_id` と少なくとも 1 つのスクリプトが必要です。
+JSON 形式です。`token_file`（ボットのトークンを含むファイルへのパス）と `client_id` と少なくとも 1 つのスクリプトが必要です。
 `config init` でテンプレートから生成できるほか、本レポジトリのテンプレートは埋め込まれています。
+
+`token_file` で、ボットのトークンを含む別のファイルを指定します。トークン自体は
+設定ファイルに書き込まれないので安全です。Discord アプリの *Bot* ページで取得した
+トークンをそのままそのファイルに書いてください。`Bot ` 接頭辞は任意で、起動時に
+自動で付されます。`echo` が追加する末尾の改行を含む前後の空白は除去されるので、
+トークンだけを書けば十分です：
+
+```sh
+echo "MII3.YourTokenHere.example" > token.txt
+```
+
+トークンは起動時にこのファイルから読み込まれ、設定に戻されることはありません。
 
 ```json
 {
-  "token": ">>Your Token<<",
+  "token_file": ">>トークンを含むファイルへのパス<<",
   "client_id": ">>Your Client ID<<",
   "scripts": {
     "script1": {
@@ -71,7 +83,7 @@ JSON 形式です。`token` と `client_id` と少なくとも 1 つのスクリ
 
 | キー | 意味 |
 | --- | --- |
-| `token` | ボットのトークン ([公式ドキュメントで確認](https://docs.discord.com/developers/quick-start/getting-started)) |
+| `token_file` | ボットのトークンを含むファイルへのパス ([公式ドキュメントで確認](https://docs.discord.com/developers/quick-start/getting-started)) |
 | `client_id` | Discord アプリケーションのクライアント ID ([確認方法](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
 | `scripts` | スラッシュコマンド名 → スクリプトのマップ |
 

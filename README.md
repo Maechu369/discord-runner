@@ -53,12 +53,25 @@ make build
 
 ## Config file
 
-It uses JSON. It requires a `token`, a `client_id`, and at least one script.
+It uses JSON. It requires a `token_file` pointing at a file that holds the bot
+token, a `client_id`, and at least one script.
 You can generate one with `config init`; the template embedded in this binary is also available in this repo.
+
+The `token_file` points at a separate file that holds your bot token, so the
+token itself never lives in the config. Put the raw token from your Discord app
+in that file — the `Bot ` prefix is optional and added for you at startup.
+Leading and trailing whitespace, including a trailing newline from `echo`, is
+trimmed, so writing just the token is enough:
+
+```sh
+echo "MII3.YourTokenHere.example" > token.txt
+```
+
+The token is read from that file when the bot starts and is never written back.
 
 ```json
 {
-  "token": ">>Your Token<<",
+  "token_file": ">>Path to a file containing your token<<",
   "client_id": ">>Your Client ID<<",
   "scripts": {
     "script1": {
@@ -72,7 +85,7 @@ You can generate one with `config init`; the template embedded in this binary is
 
 | Key | Meaning |
 | --- | --- |
-| `token` | Bot token ([get it from the official docs](https://docs.discord.com/developers/quick-start/getting-started)) |
+| `token_file` | Path to a file containing the bot token ([get it from the official docs](https://docs.discord.com/developers/quick-start/getting-started)) |
 | `client_id` | Discord application client ID ([how to find it](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
 | `scripts` | Map of slash command name to script |
 

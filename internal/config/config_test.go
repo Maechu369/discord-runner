@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"slices"
@@ -152,13 +153,17 @@ func TestFormatValue(t *testing.T) {
 func TestLoadConfigValid(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "config.json")
-	content := `{
-		"token": "test-token",
+	tokenPath := filepath.Join(dir, "token.txt")
+	if err := os.WriteFile(tokenPath, []byte("test-token"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	content := fmt.Sprintf(`{
+		"token_file": %q,
 		"client_id": "test-client",
 		"scripts": {
 			"script1": {"cwd": "~", "cmd": ["echo", "hi"]}
 		}
-	}`
+	}`, tokenPath)
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -181,13 +186,19 @@ func TestLoadConfigValid(t *testing.T) {
 
 func TestLoadConfigErrors(t *testing.T) {
 	dir := t.TempDir()
+	emptyToken := filepath.Join(dir, "empty.txt")
+	if err := os.WriteFile(emptyToken, nil, 0o644); err != nil {
+		t.Fatal(err)
+	}
 	cases := map[string]string{
-		"missing file":     "",
-		"invalid JSON":     `not json`,
-		"missing token":    `{"client_id": "c", "scripts": {}}`,
-		"missing client":   `{"token": "t", "scripts": {}}`,
-		"no scripts":       `{"token": "t", "client_id": "c"}`,
-		"negative timeout": `{"token": "t", "client_id": "c", "scripts": {"s": {"cmd": ["echo"], "timeout": -1}}}`,
+		"missing file":         "",
+		"invalid JSON":         `not json`,
+		"missing token_file":   `{"client_id": "c", "scripts": {}}`,
+		"missing client":       `{"token_file": "token.txt", "scripts": {}}`,
+		"no scripts":           `{"token_file": "token.txt", "client_id": "c"}`,
+		"negative timeout":     `{"token_file": "token.txt", "client_id": "c", "scripts": {"s": {"cmd": ["echo"], "timeout": -1}}}`,
+		"token file not found": `{"token_file": "missing.txt", "client_id": "c", "scripts": {"s": {"cmd": ["echo"]}}}`,
+		"empty token file":     fmt.Sprintf(`{"token_file": %q, "client_id": "c", "scripts": {"s": {"cmd": ["echo"]}}}`, emptyToken),
 	}
 	for name, content := range cases {
 		t.Run(name, func(t *testing.T) {

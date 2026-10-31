@@ -1,5 +1,5 @@
 {
-	"token": ">>Your Token<<",
+	"token_file": ">>Path to token file (secret)<<",
 	"client_id": ">>Your Client ID<<",
 	"scripts": {
 		"script1": {
