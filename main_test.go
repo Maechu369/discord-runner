@@ -18,7 +18,7 @@ func withArgs(t *testing.T, args []string, fn func()) {
 func TestConfigArg(t *testing.T) {
 	t.Run("returns the config path after the subcommand", func(t *testing.T) {
 		withArgs(t, []string{"discord-runner", "flatten", "cfg.json"}, func() {
-			got, err := configArg("flatten")
+			got, err := configArg("flatten", 2)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
@@ -28,21 +28,21 @@ func TestConfigArg(t *testing.T) {
 		})
 	})
 
-	t.Run("returns the config path for the bot subcommand", func(t *testing.T) {
-		withArgs(t, []string{"discord-runner", "bot", "c.json"}, func() {
-			got, err := configArg("bot")
+	t.Run("returns the config path for the start subcommand", func(t *testing.T) {
+		withArgs(t, []string{"discord-runner", "start", "c.json"}, func() {
+			got, err := configArg("start", 2)
 			if err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
 			if got != "c.json" {
-				t.Errorf("configArg(bot) = %q, want c.json", got)
+				t.Errorf("configArg(start) = %q, want c.json", got)
 			}
 		})
 	})
 
 	t.Run("errors when the config path is missing", func(t *testing.T) {
 		withArgs(t, []string{"discord-runner", "flatten"}, func() {
-			_, err := configArg("flatten")
+			_, err := configArg("flatten", 2)
 			if err == nil {
 				t.Fatal("expected error for missing config path, got nil")
 			}

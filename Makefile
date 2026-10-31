@@ -38,15 +38,15 @@ check: fmtcheck vet test
 
 ## run: Run the Discord bot from config.json
 run:
-	go run . bot $(CONFIG)
+	go run . start $(CONFIG)
 
-## init: Generate config.json from the template
+## init: Generate config.json via `config init`
 init:
-	./$(BINARY) init $(CONFIG)
+	./$(BINARY) config init $(CONFIG)
 
-## flatten: Print config.json as key=value lines
+## flatten: Print config.json as key=value lines via `config flatten`
 flatten:
-	./$(BINARY) flatten $(CONFIG)
+	./$(BINARY) config flatten $(CONFIG)
 
 ## clean: Remove the binary
 clean:
