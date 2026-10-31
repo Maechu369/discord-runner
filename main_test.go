@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -29,8 +31,8 @@ func parseLines(t *testing.T, v any) map[string]string {
 
 func TestFlattenBasics(t *testing.T) {
 	input := map[string]any{
-		"token":   "abc123",
-		"bot":     map[string]any{"name": "Runner", "presence": true},
+		"token":    "abc123",
+		"bot":      map[string]any{"name": "Runner", "presence": true},
 		"channels": []any{"111", "222", "333"},
 		"limits": map[string]any{
 			"maxRetries": 5,
@@ -40,15 +42,15 @@ func TestFlattenBasics(t *testing.T) {
 	}
 
 	want := map[string]string{
-		"token":          "abc123",
-		"bot.name":       "Runner",
-		"bot.presence":   "true",
-		"channels[0]":    "111",
-		"channels[1]":    "222",
-		"channels[2]":    "333",
+		"token":             "abc123",
+		"bot.name":          "Runner",
+		"bot.presence":      "true",
+		"channels[0]":       "111",
+		"channels[1]":       "222",
+		"channels[2]":       "333",
 		"limits.maxRetries": "5",
-		"limits.timeout":   "1.5",
-		"limits.metadata":  "null",
+		"limits.timeout":    "1.5",
+		"limits.metadata":   "null",
 	}
 
 	got := parseLines(t, input)
@@ -119,5 +121,45 @@ func TestFormatValue(t *testing.T) {
 				t.Errorf("formatValue(%v) = %q, want %q", c.in, got, c.want)
 			}
 		})
+	}
+}
+
+func TestCmdInitWritesTemplate(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+
+	if err := cmdInit(path); err != nil {
+		t.Fatalf("cmdInit: %v", err)
+	}
+
+	got, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read generated file: %v", err)
+	}
+	if string(got) != string(templateJSON) {
+		t.Errorf("generated content =\n%q\nwant template =\n%q", got, templateJSON)
+	}
+
+	// The generated file must be valid, parseable JSON.
+	var root any
+	if err := json.Unmarshal(got, &root); err != nil {
+		t.Errorf("generated config is not valid JSON: %v", err)
+	}
+}
+
+func TestCmdInitRefusesOverwrite(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+	if err := os.WriteFile(path, []byte("original"), 0o644); err != nil {
+		t.Fatalf("seed file: %v", err)
+	}
+
+	if err := cmdInit(path); err == nil {
+		t.Fatal("expected error overwriting existing file, got nil")
+	}
+
+	got, _ := os.ReadFile(path)
+	if string(got) != "original" {
+		t.Errorf("existing file was clobbered: %q", got)
 	}
 }

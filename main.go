@@ -2,36 +2,83 @@ package main
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
 )
 
+// templateJSON is the seed config written by `init`. Embedding the file
+// keeps the template and the binary in sync (single source of truth).
+//
+//go:embed templates/config.template.json
+var templateJSON []byte
+
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: discord-runner <config.json>")
+		fmt.Fprint(os.Stderr, usage)
 		os.Exit(2)
 	}
+	switch os.Args[1] {
+	case "init":
+		path := "config.json"
+		if len(os.Args) >= 3 {
+			path = os.Args[2]
+		}
+		if err := cmdInit(path); err != nil {
+			fmt.Fprintf(os.Stderr, "init: %v\n", err)
+			os.Exit(1)
+		}
+	default:
+		if err := runFlatten(os.Args[1]); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
+		}
+	}
+}
 
-	data, err := os.ReadFile(os.Args[1])
+const usage = `discord-runner - read a JSON config and print key=value
+
+usage:
+  discord-runner <config.json>   read a JSON config and print key=value
+  discord-runner init [path]     generate an initial config (default: config.json)
+`
+
+// cmdInit writes the embedded template config to path. It refuses to
+// overwrite an existing file to avoid clobbering a real config.
+func cmdInit(path string) error {
+	if _, err := os.Stat(path); err == nil {
+		return fmt.Errorf("refusing to overwrite existing file: %s", path)
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	if err := os.WriteFile(path, templateJSON, 0o644); err != nil {
+		return err
+	}
+	fmt.Printf("created %s\n", path)
+	return nil
+}
+
+// runFlatten reads, parses, and prints a JSON config as key=value lines.
+func runFlatten(path string) error {
+	data, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to read config: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to read config %q: %v", path, err)
 	}
 
 	var root any
 	if err := json.Unmarshal(data, &root); err != nil {
-		fmt.Fprintf(os.Stderr, "invalid JSON: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("invalid JSON in %q: %v", path, err)
 	}
+
 	out := &bytes.Buffer{}
 	flatten("", root, out)
 
 	if _, err := os.Stdout.Write(out.Bytes()); err != nil {
-		fmt.Fprintf(os.Stderr, "failed to write output: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to write output: %v", err)
 	}
+	return nil
 }
 
 // flatten walks a decoded JSON value and emits key=value lines.
