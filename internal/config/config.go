@@ -18,9 +18,12 @@ var templateJSON []byte
 // Script defines a single local command exposed as a Discord slash
 // command. Cwd is the working directory, resolved against the home
 // directory when it starts with "~"; Cmd is [executable, args...].
+// Timeout is the maximum runtime in seconds before the command is
+// terminated; a non-positive value disables the limit.
 type Script struct {
-	Cwd string   `json:"cwd"`
-	Cmd []string `json:"cmd"`
+	Cwd     string   `json:"cwd"`
+	Cmd     []string `json:"cmd"`
+	Timeout int      `json:"timeout"`
 }
 
 // Config is the on-disk bot configuration.
@@ -49,6 +52,11 @@ func LoadConfig(path string) (*Config, error) {
 	}
 	if len(cfg.Scripts) == 0 {
 		return nil, fmt.Errorf("config %q: no scripts defined", path)
+	}
+	for name, s := range cfg.Scripts {
+		if s.Timeout < 0 {
+			return nil, fmt.Errorf("config %q: script %q timeout must not be negative", path, name)
+		}
 	}
 	return &cfg, nil
 }

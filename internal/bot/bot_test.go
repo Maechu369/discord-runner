@@ -64,6 +64,16 @@ func TestRunScriptEmptyCmd(t *testing.T) {
 		t.Fatal("expected error for empty cmd")
 	}
 }
+func TestRunScriptTimesOut(t *testing.T) {
+	// A command longer than the timeout must be terminated and reported.
+	_, err := runScript(config.Script{Cmd: []string{"sleep", "10"}, Timeout: 1})
+	if err == nil {
+		t.Fatal("expected timeout error, got nil")
+	}
+	if err != nil && !strings.Contains(err.Error(), "timed out") {
+		t.Errorf("error = %v, want one mentioning timeout", err)
+	}
+}
 
 func TestExpandHome(t *testing.T) {
 	home, err := os.UserHomeDir()

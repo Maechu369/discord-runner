@@ -157,11 +157,12 @@ func TestLoadConfigValid(t *testing.T) {
 func TestLoadConfigErrors(t *testing.T) {
 	dir := t.TempDir()
 	cases := map[string]string{
-		"missing file":   "",
-		"invalid JSON":   `not json`,
-		"missing token":  `{"client_id": "c", "scripts": {}}`,
-		"missing client": `{"token": "t", "scripts": {}}`,
-		"no scripts":     `{"token": "t", "client_id": "c"}`,
+		"missing file":     "",
+		"invalid JSON":     `not json`,
+		"missing token":    `{"client_id": "c", "scripts": {}}`,
+		"missing client":   `{"token": "t", "scripts": {}}`,
+		"no scripts":       `{"token": "t", "client_id": "c"}`,
+		"negative timeout": `{"token": "t", "client_id": "c", "scripts": {"s": {"cmd": ["echo"], "timeout": -1}}}`,
 	}
 	for name, content := range cases {
 		t.Run(name, func(t *testing.T) {

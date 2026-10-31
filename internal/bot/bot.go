@@ -2,6 +2,7 @@ package bot
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 	"unicode/utf8"
 
 	"github.com/bwmarrin/discordgo"
@@ -114,13 +116,21 @@ func respondImmediate(s *discordgo.Session, i *discordgo.InteractionCreate, cont
 
 // runScript executes s.Cmd with its working directory, returning the
 // command's stdout. On a non-zero exit, the exit status and stderr are
-// appended so the failure is visible in Discord.
+// appended so the failure is visible in Discord. When s.Timeout is
+// positive, the command is terminated once that many seconds elapse.
 func runScript(s config.Script) (string, error) {
 	if len(s.Cmd) == 0 {
 		return "", fmt.Errorf("script cmd is empty")
 	}
 
-	c := exec.Command(s.Cmd[0], s.Cmd[1:]...)
+	ctx := context.Background()
+	var cancel context.CancelFunc
+	if s.Timeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, time.Duration(s.Timeout)*time.Second)
+		defer cancel()
+	}
+
+	c := exec.CommandContext(ctx, s.Cmd[0], s.Cmd[1:]...)
 	if dir := expandHome(s.Cwd); dir != "" {
 		c.Dir = dir
 	}
@@ -132,6 +142,10 @@ func runScript(s config.Script) (string, error) {
 
 	out := strings.TrimSpace(stdout.String())
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			out = fmt.Sprintf("timed out after %ds", s.Timeout)
+			return out, fmt.Errorf("script %q timed out after %ds", s.Cmd[0], s.Timeout)
+		}
 		errStr := strings.TrimSpace(stderr.String())
 		if errStr != "" {
 			if out != "" {
