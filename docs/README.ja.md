@@ -46,6 +46,8 @@ make build
 ./discord-runner config flatten config.json
 ```
 
+`config flatten` が出力する `token` の値はマスクされます（`Bot ` 接頭辞と文字数のみ表示し、秘密部分は非表示）。
+
 `--help` / `-h` を指定しても同じ利用方法が表示されます。
 
 ## 設定ファイル

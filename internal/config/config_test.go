@@ -42,7 +42,7 @@ func TestFlattenBasics(t *testing.T) {
 	}
 
 	want := map[string]string{
-		"token":             "abc123",
+		"token":             "[REDACTED] (6 chars)",
 		"bot.name":          "Runner",
 		"bot.presence":      "true",
 		"channels[0]":       "111",
@@ -63,6 +63,31 @@ func TestFlattenBasics(t *testing.T) {
 		if _, ok := want[k]; !ok {
 			t.Errorf("unexpected key %q", k)
 		}
+	}
+}
+
+func TestFlattenTokenMasked(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"bare", "abcdef012345.ghijklmnop.stuvwxyz0123456789_abc", maskToken("abcdef012345.ghijklmnop.stuvwxyz0123456789_abc")},
+		{"bot prefix", "Bot abcdef012345.ghijklmnop.stuvwxyz0123456789_abc", maskToken("Bot abcdef012345.ghijklmnop.stuvwxyz0123456789_abc")},
+		{"bearer prefix", "Bearer xyz.Bearer-prefix-token-value-123456", maskToken("Bearer xyz.Bearer-prefix-token-value-123456")},
+		{"empty", "", maskToken("")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			out := &bytes.Buffer{}
+			flatten("", map[string]any{"token": tc.in}, out)
+			got := out.String()
+			if !strings.Contains(got, tc.want) {
+				t.Errorf("flatten(%q) = %q, want to contain %q", tc.in, got, tc.want)
+			}
+			if tc.in != "" && strings.Contains(got, tc.in) {
+				t.Errorf("flatten leaked raw token in %q", got)
+			}
+		})
 	}
 }
 

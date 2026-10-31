@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 )
 
 // templateJSON is the seed config written by `Init`. Embedding the file
@@ -101,6 +102,8 @@ func Flatten(path string) error {
 // Nested objects are flattened with a "." separator and keys are
 // emitted in sorted order for deterministic output; arrays are
 // indexed with "[i]".
+// A "token" key is redacted: its secret is hidden and
+// only its length is shown so it can be verified without leaking it.
 func flatten(prefix string, v any, out *bytes.Buffer) {
 	switch t := v.(type) {
 	case map[string]any:
@@ -114,7 +117,11 @@ func flatten(prefix string, v any, out *bytes.Buffer) {
 			if prefix != "" {
 				child = prefix + "." + k
 			}
-			flatten(child, t[k], out)
+			if k == "token" {
+				fmt.Fprintf(out, "%s=%s\n", child, maskToken(fmt.Sprintf("%v", t[k])))
+			} else {
+				flatten(child, t[k], out)
+			}
 		}
 	case []any:
 		for i, item := range t {
@@ -142,4 +149,28 @@ func formatValue(v any) string {
 		}
 		return string(b)
 	}
+}
+
+// maskToken hides a token's secret characters while preserving its length so
+// callers can still verify the value's presence. An optional "Bot "/"Bearer "
+// scheme prefix is kept visible; the remainder is replaced with [REDACTED] and
+// the token's total length is reported.
+func maskToken(token string) string {
+	prefix, rest := tokenScheme(token)
+	if rest == "" {
+		// Only a scheme prefix was supplied; nothing sensitive to hide.
+		return prefix
+	}
+	return fmt.Sprintf("%s[REDACTED] (%d chars)", prefix, len(token))
+}
+
+// tokenScheme splits an optional leading "Bot "/"Bearer " scheme prefix from
+// the rest of a token. It returns an empty prefix when the token has none.
+func tokenScheme(token string) (prefix, rest string) {
+	for _, p := range []string{"Bot ", "Bearer "} {
+		if strings.HasPrefix(token, p) {
+			return p, token[len(p):]
+		}
+	}
+	return "", token
 }
