@@ -82,7 +82,7 @@ func RunBot(configPath string) error {
 // do not hit Discord's 3-second reply deadline, then edits the deferred
 // message with the captured output.
 func handleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate, cfg *config.Config) {
-	data, ok := i.Data.(*discordgo.ApplicationCommandInteractionData)
+	data, ok := commandData(i)
 	if !ok {
 		respondImmediate(s, i, "Unsupported interaction")
 		return
@@ -111,6 +111,14 @@ func handleSlashCommand(s *discordgo.Session, i *discordgo.InteractionCreate, cf
 	}); err != nil {
 		log.Printf("edit %q: %v", data.Name, err)
 	}
+}
+
+// commandData extracts the application command data from an interaction.
+// discordgo stores the value type (not a pointer) in InteractionCreate.Data,
+// so the assertion must target the value type to accept a real command.
+func commandData(i *discordgo.InteractionCreate) (discordgo.ApplicationCommandInteractionData, bool) {
+	d, ok := i.Data.(discordgo.ApplicationCommandInteractionData)
+	return d, ok
 }
 
 // respondImmediate sends a synchronous reply for short messages that do

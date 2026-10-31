@@ -195,3 +195,27 @@ func TestPrefixBotToken(t *testing.T) {
 		})
 	}
 }
+
+// TestCommandData guards the type used to read ApplicationCommandInteractionData.
+// discordgo stores the value type in InteractionCreate.Data; a pointer assertion
+// (the bug behind "Unsupported interaction") would reject every command.
+func TestCommandData(t *testing.T) {
+	name := "deploy"
+	i := &discordgo.InteractionCreate{
+		Interaction: &discordgo.Interaction{
+			Type: discordgo.InteractionApplicationCommand,
+		},
+	}
+	i.Data = discordgo.ApplicationCommandInteractionData{Name: name}
+	got, ok := commandData(i)
+	if !ok {
+		t.Fatalf("commandData: ok = false, want true for a real application command")
+	}
+	if got.Name != name {
+		t.Errorf("commandData: Name = %q, want %q", got.Name, name)
+	}
+
+	if _, ok := commandData(&discordgo.InteractionCreate{Interaction: &discordgo.Interaction{}}); ok {
+		t.Error("commandData: ok = true, want false for nil data")
+	}
+}
