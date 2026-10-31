@@ -78,7 +78,8 @@ echo "MII3.YourTokenHere.example" > token.txt
     "example": {
       "cwd": "~",
       "cmd": ["echo", "hello world"],
-      "timeout": 60
+      "timeout": 60,
+      "description": "Say hello"
     }
   }
 }

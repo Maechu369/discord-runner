@@ -7,7 +7,7 @@
 			"cwd": "~",
 			"cmd": ["echo", "hello world"],
 			"timeout": 60,
-			"description": ""
+			"description": "Say hello"
 		}
 	}
 }

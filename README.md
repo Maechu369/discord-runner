@@ -80,7 +80,8 @@ The token is read from that file when the bot starts and is never written back.
     "example": {
       "cwd": "~",
       "cmd": ["echo", "hello world"],
-      "timeout": 60
+      "timeout": 60,
+      "description": "Say hello"
     }
   }
 }
