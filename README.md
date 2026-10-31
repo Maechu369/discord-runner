@@ -77,9 +77,9 @@ The token is read from that file when the bot starts and is never written back.
   "token_file": ">>Path to a file containing your token<<",
   "client_id": ">>Your Client ID<<",
   "scripts": {
-    "script1": {
+    "example": {
       "cwd": "~",
-      "cmd": ["echo", "If you defined like this, you can call this command with `/script1`."],
+      "cmd": ["echo", "hello world"],
       "timeout": 60
     }
   }
