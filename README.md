@@ -100,7 +100,7 @@ Each script:
 | --- | --- |
 | `cmd` | Command to run: `[executable, args...]` |
 | `cwd` | Working directory (`~` expands to your home directory) |
-| `timeout` | Max runtime in seconds (0 or less disables it) |
+| `timeout` | Max runtime in seconds. Setting it to 0 disables the limit |
 | `description` | Optional slash command description. Empty falls back to a generated description |
 
 Both values come from your Discord app: the **Application ID** is on the *General Information* page and the bot **Token** on the *Bot* page. The [Getting Started guide](https://docs.discord.com/developers/quick-start/getting-started) walks you through creating an app and copying them.

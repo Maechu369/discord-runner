@@ -98,7 +98,7 @@ echo "MII3.YourTokenHere.example" > token.txt
 | --- | --- |
 | `cmd` | 実行するコマンド `[実行可能ファイル, 引数...]` |
 | `cwd` | 作業ディレクトリ（`~` はホームディレクトリに展開） |
-| `timeout` | 最大実行秒数（0 以下で無効化） |
+| `timeout` | 最大実行秒数。0 を指定すると無効化 |
 | `description` | スラッシュコマンドの説明。空の場合は自動生成された説明が使われます |
 
 両方ともDiscordアプリから取得できます。**Application ID** は*General Information*ページ、ボットの**Token** は*Bot*ページで確認できます。アプリの作成と値の取得方法は[Getting Startedガイド](https://docs.discord.com/developers/quick-start/getting-started)をご覧ください。
