@@ -11,6 +11,7 @@ Each script defined in the config file registers its own slash command, letting 
 - `~` expands to the home directory
 - Returns command output as a fenced code block (truncated automatically beyond 2000 characters)
 - Kills the command on timeout; shows exit status and stderr on failure
+- `/list` is a built-in slash command that lists every configured command, plus the command each one runs
 - `config init` generates a config from a template; `config flatten` prints the config as `key=value` lines
 
 ## Requirements
@@ -45,6 +46,8 @@ make build
 
 # Print a config as key=value lines
 ./discord-runner config flatten config.json
+# List the commands a config defines (offline, no Discord connection)
+./discord-runner list config.json
 ```
 
 `config flatten` never prints the token itself: it shows the `Bot ` prefix and the character count, but masks the secret.

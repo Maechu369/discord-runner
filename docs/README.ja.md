@@ -10,6 +10,7 @@ Discord のスラッシュコマンドから**ローカルのコマンドを実�
 - `~` でホームディレクトリを解決
 - コマンドの標準出力をコードブロックとして返す（2000 文字を超えると自動的に切り詰め）
 - タイムアウト超過時は強制終了、失敗時はステータスと標準エラーを表示
+- `/list` は設定されたスラッシュコマンドをすべて一覧表示する組み込みスラッシュコマンド
 - `config init` でテンプレートから設定ファイルを生成、`config flatten` で設定を `key=value` 形式で出力
 
 ## 要件
@@ -44,6 +45,8 @@ make build
 
 # 設定ファイルを key=value 形式で出力
 ./discord-runner config flatten config.json
+# 設定が定義するコマンドを一覧表示（オフライン。Discord には接続しない）
+./discord-runner list config.json
 ```
 
 `config flatten` が出力する `token` の値はマスクされます（`Bot ` 接頭辞と文字数のみ表示し、秘密部分は非表示）。
