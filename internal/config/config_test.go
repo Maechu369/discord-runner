@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"slices"
@@ -254,4 +255,83 @@ func TestCmdInitRefusesOverwrite(t *testing.T) {
 	if string(got) != "original" {
 		t.Errorf("existing file was clobbered: %q", got)
 	}
+}
+
+func TestCommandNames(t *testing.T) {
+	cfg := &Config{Scripts: map[string]Script{
+		"zeta":  {},
+		"alpha": {},
+		"mid":   {},
+	}}
+	want := []string{"alpha", "mid", "zeta"}
+	if got := cfg.CommandNames(); !slices.Equal(got, want) {
+		t.Errorf("CommandNames = %v, want %v", got, want)
+	}
+}
+
+func TestCommandNamesEmpty(t *testing.T) {
+	if got := (&Config{}).CommandNames(); len(got) != 0 {
+		t.Errorf("empty config CommandNames = %v, want none", got)
+	}
+}
+
+func TestList(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+	tokenPath := filepath.Join(dir, "token.txt")
+	if err := os.WriteFile(tokenPath, []byte("test-token"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	content := fmt.Sprintf(`{
+		"token_file": %q,
+		"client_id": "test-client",
+		"scripts": {
+			"zeta": {"cmd": ["echo", "z"]},
+			"alpha": {"cmd": ["echo", "a"]}
+		}
+	}`, tokenPath)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	got := captureStdout(t, func() {
+		if err := List(path); err != nil {
+			t.Fatalf("List: %v", err)
+		}
+	})
+	want := "2 command(s):\n  /alpha  echo a\n  /zeta  echo z\n"
+	if got != want {
+		t.Errorf("List output =\n%q\nwant\n%q", got, want)
+	}
+}
+
+func TestListErrors(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "missing.json")
+	if err := List(path); err == nil {
+		t.Fatal("expected error listing a missing config, got nil")
+	}
+}
+
+// captureStdout redirects os.Stdout during fn and returns everything written.
+func captureStdout(t *testing.T, fn func()) string {
+	t.Helper()
+	orig := os.Stdout
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("pipe: %v", err)
+	}
+	os.Stdout = w
+	defer func() { os.Stdout = orig }()
+
+	fn()
+	if err := w.Close(); err != nil {
+		t.Fatalf("close writer: %v", err)
+	}
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, r); err != nil {
+		t.Fatalf("copy stdout: %v", err)
+	}
+	r.Close()
+	return buf.String()
 }

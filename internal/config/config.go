@@ -70,6 +70,17 @@ func LoadConfig(path string) (*Config, error) {
 	return &cfg, nil
 }
 
+// CommandNames returns the configured slash command names in sorted order.
+// Sorting makes the output deterministic for tests and CLI previews.
+func (c *Config) CommandNames() []string {
+	names := make([]string, 0, len(c.Scripts))
+	for name := range c.Scripts {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
 // loadToken reads the bot token from the file named by p. A leading "~" is
 // expanded to the home directory and surrounding whitespace is trimmed so a
 // file written with `echo` still yields a clean token.
@@ -132,6 +143,29 @@ func Flatten(path string) error {
 
 	out := &bytes.Buffer{}
 	flatten("", root, out)
+
+	if _, err := os.Stdout.Write(out.Bytes()); err != nil {
+		return fmt.Errorf("failed to write output: %v", err)
+	}
+	return nil
+}
+
+// List reads, validates, and prints the slash commands defined by the config at
+// path. It intentionally does not connect to Discord: it reports what the
+// config would register, so it works offline and before a token is valid.
+// Names are printed in sorted order with the command each one runs.
+func List(path string) error {
+	cfg, err := LoadConfig(path)
+	if err != nil {
+		return err
+	}
+
+	names := cfg.CommandNames()
+	out := &bytes.Buffer{}
+	fmt.Fprintf(out, "%d command(s):\n", len(names))
+	for _, name := range names {
+		fmt.Fprintf(out, "  /%s  %s\n", name, strings.Join(cfg.Scripts[name].Cmd, " "))
+	}
 
 	if _, err := os.Stdout.Write(out.Bytes()); err != nil {
 		return fmt.Errorf("failed to write output: %v", err)

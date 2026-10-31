@@ -54,6 +54,12 @@ func main() {
 			fmt.Fprint(os.Stderr, configUsage)
 			os.Exit(2)
 		}
+	case "list":
+		// List the slash commands defined by the config without connecting.
+		if err := config.List(arg("list", 2)); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
+		}
 	default:
 		// Default entrypoint: run the Discord bot from the given config.
 		if err := bot.RunBot(arg("start", 2)); err != nil {
@@ -97,6 +103,9 @@ usage:
 
   discord-runner config flatten <config.json>
       Read a config file and print it as key=value lines.
+
+  discord-runner list <config.json>
+      List the slash commands defined in the config without connecting.
 `
 
 const configUsage = `config commands:
