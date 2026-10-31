@@ -30,6 +30,7 @@
         {
           pre-commit = {
             settings.hooks = {
+              gofmt.enable = true;
               nixfmt.enable = true;
               git-secrets = {
                 enable = true;
