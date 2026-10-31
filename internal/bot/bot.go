@@ -56,7 +56,7 @@ func RunBot(configPath string) error {
 		Description: "List the slash commands defined in the config",
 		Type:        discordgo.ChatApplicationCommand,
 	})
-	for name := range cfg.Scripts {
+	for name, s := range cfg.Scripts {
 		// The built-in "list" command owns the name; skip a script that would
 		// otherwise collide and make the bulk overwrite fail.
 		if name == "list" {
@@ -64,7 +64,7 @@ func RunBot(configPath string) error {
 		}
 		cmds = append(cmds, &discordgo.ApplicationCommand{
 			Name:        name,
-			Description: fmt.Sprintf("Run the %q script", name),
+			Description: scriptDescription(name, s.Description),
 			Type:        discordgo.ChatApplicationCommand,
 		})
 		registered = append(registered, name)
@@ -87,6 +87,15 @@ func RunBot(configPath string) error {
 	<-stop
 	fmt.Println("\ndiscord-runner shutting down.")
 	return nil
+}
+
+// scriptDescription returns the slash command description for a script,
+// falling back to a generated description when the config omits one.
+func scriptDescription(name, description string) string {
+	if description == "" {
+		return fmt.Sprintf("Run the %q script", name)
+	}
+	return description
 }
 
 // handleSlashCommand runs the named script and returns its output to the

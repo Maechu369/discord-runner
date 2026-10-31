@@ -21,11 +21,14 @@ var templateJSON []byte
 // command. Cwd is the working directory, resolved against the home
 // directory when it starts with "~"; Cmd is [executable, args...].
 // Timeout is the maximum runtime in seconds before the command is
-// terminated; a non-positive value disables the limit.
+// terminated; a non-positive value disables the limit. Description is an
+// optional human-readable slash command description; when empty the bot
+// falls back to a generated description.
 type Script struct {
-	Cwd     string   `json:"cwd"`
-	Cmd     []string `json:"cmd"`
-	Timeout int      `json:"timeout"`
+	Cwd         string   `json:"cwd"`
+	Cmd         []string `json:"cmd"`
+	Timeout     int      `json:"timeout"`
+	Description string   `json:"description"`
 }
 
 // Config is the on-disk bot configuration.

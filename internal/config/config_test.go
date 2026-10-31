@@ -245,6 +245,33 @@ func TestLoadConfigGuildID(t *testing.T) {
 	}
 }
 
+func TestLoadConfigDescription(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "config.json")
+	tokenPath := filepath.Join(dir, "token.txt")
+	if err := os.WriteFile(tokenPath, []byte("test-token"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	content := fmt.Sprintf(`{
+		"token_file": %q,
+		"client_id": "test-client",
+		"scripts": {
+			"script1": {"cwd": "~", "cmd": ["echo", "hi"], "description": "Runs a test"}
+		}
+	}`, tokenPath)
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := LoadConfig(path)
+	if err != nil {
+		t.Fatalf("LoadConfig: %v", err)
+	}
+	if got := cfg.Scripts["script1"].Description; got != "Runs a test" {
+		t.Errorf("script1 description = %q, want %q", got, "Runs a test")
+	}
+}
+
 func TestCmdInitWritesTemplate(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "config.json")

@@ -219,3 +219,19 @@ func TestCommandData(t *testing.T) {
 		t.Error("commandData: ok = true, want false for nil data")
 	}
 }
+
+func TestScriptDescription(t *testing.T) {
+	cases := map[string]struct {
+		name        string
+		description string
+		want        string
+	}{
+		"provided": {name: "ping", description: "Ping the bot", want: "Ping the bot"},
+		"empty":    {name: "ping", description: "", want: "Run the \"ping\" script"},
+	}
+	for name, tc := range cases {
+		if got := scriptDescription(tc.name, tc.description); got != tc.want {
+			t.Errorf("%s: scriptDescription(%q, %q) = %q, want %q", name, tc.name, tc.description, got, tc.want)
+		}
+	}
+}

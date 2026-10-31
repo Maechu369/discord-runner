@@ -6,7 +6,8 @@
 		"script1": {
 			"cwd": "~",
 			"cmd": ["echo", "If you defined like this, you can call this command with `/script1`."],
-			"timeout": 60
+			"timeout": 60,
+			"description": ""
 		}
 	}
 }
