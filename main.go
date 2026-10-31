@@ -33,6 +33,9 @@ func main() {
 			os.Exit(2)
 		}
 		switch os.Args[2] {
+		case "--help", "-h":
+			fmt.Fprint(os.Stdout, configUsage)
+			os.Exit(0)
 		case "init":
 			path := "config.json"
 			if len(os.Args) >= 4 {
@@ -87,4 +90,23 @@ usage:
   discord-runner [start] <config.json>   run the Discord bot (default: start)
   discord-runner config init [path]      generate an initial config (default: config.json)
   discord-runner config flatten <config.json>   print a JSON config as key=value
+`
+
+const configUsage = `config commands:
+
+  config init [path]
+      Generate an initial config from the embedded template.
+      Default path is config.json.
+
+  config flatten <config.json>
+      Read a config file and print it as key=value lines.
+
+config file:
+
+  token       Bot token
+  client_id   Discord client/application ID
+  scripts     Map of slash command name to script. Each script has:
+                cmd      Command to run: [executable, args...]
+                cwd      Working directory (~ expands to your home directory)
+                timeout  Maximum runtime in seconds (0 disables the limit)
 `
