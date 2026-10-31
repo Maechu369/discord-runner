@@ -19,6 +19,16 @@ import (
 	"discord-runner/internal/config"
 )
 
+// prefixBotToken ensures the token carries the "Bot " prefix that discordgo's
+// Session expects for bot tokens. Tokens that already start with "Bot " are
+// returned unchanged so callers never double-prefix it.
+func prefixBotToken(token string) string {
+	if token != "" && !strings.HasPrefix(token, "Bot ") {
+		return "Bot " + token
+	}
+	return token
+}
+
 // RunBot connects to Discord, registers a slash command for each script,
 // and serves interactions until interrupted by a signal.
 func RunBot(configPath string) error {
@@ -27,7 +37,7 @@ func RunBot(configPath string) error {
 		return err
 	}
 
-	session, err := discordgo.New(cfg.Token)
+	session, err := discordgo.New(prefixBotToken(cfg.Token))
 	if err != nil {
 		return fmt.Errorf("failed to create session: %v", err)
 	}

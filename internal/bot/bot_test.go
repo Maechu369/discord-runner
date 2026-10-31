@@ -176,3 +176,22 @@ func TestWrapRESTErrOtherStatus(t *testing.T) {
 		t.Errorf("wrapRESTErr(500) = %q, want prefix %q", msg, "op:")
 	}
 }
+
+func TestPrefixBotToken(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"empty", "", ""},
+		{"bare", "abc.def.ghi", "Bot abc.def.ghi"},
+		{"already prefixed", "Bot abc.def.ghi", "Bot abc.def.ghi"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := prefixBotToken(tt.in); got != tt.want {
+				t.Errorf("prefixBotToken(%q) = %q, want %q", tt.in, got, tt.want)
+			}
+		})
+	}
+}
