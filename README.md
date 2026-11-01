@@ -50,6 +50,8 @@ make build
 ./discord-runner config flatten config.json
 # List the commands a config defines (offline, no Discord connection)
 ./discord-runner list config.json
+# Print the build version
+./discord-runner version
 ```
 
 `config flatten` never prints the token itself: it shows the `Bot ` prefix and the character count, but masks the secret.

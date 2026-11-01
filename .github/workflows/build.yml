@@ -18,7 +18,7 @@ jobs:
           cache: true
 
       - name: Build
-        run: make build build-arm64
+        run: VERSION=${{ github.ref_name }} make build build-arm64
 
       - name: Upload binaries
         uses: actions/upload-artifact@v4.6.2

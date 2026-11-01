@@ -1,5 +1,12 @@
 BINARY := discord-runner
 CONFIG ?= config.json
+# VERSION is the release version. It defaults to the latest git tag,
+# falling back to "dev" outside a git repo or without tags. It is embedded
+# into the binary via -ldflags so `discord-runner version` prints it.
+VERSION ?= $(shell git describe --tags --dirty 2>/dev/null || echo dev)
+
+# LDFLAGS injects the version into the `version` variable at build time.
+LDFLAGS := -X main.version=$(VERSION)
 
 .PHONY: all build build-arm64 test race vet fmt fmtcheck check run init flatten clean help
 
@@ -7,11 +14,11 @@ all: check build
 
 ## build: Build the binary
 build:
-	go build -o $(BINARY) .
+	go build -ldflags "$(LDFLAGS)" -o $(BINARY) .
 
 ## build-arm64: Build an arm64 binary
 build-arm64:
-	CGO_ENABLED=0 GOARCH=arm64 go build -o $(BINARY)-arm64 .
+	CGO_ENABLED=0 GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o $(BINARY)-arm64 .
 
 ## test: Run all tests
 test:

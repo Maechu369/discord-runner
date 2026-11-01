@@ -8,6 +8,13 @@ import (
 	"discord-runner/internal/config"
 )
 
+// version is the build version, injected at compile time via
+//
+//	-ldflags "-X main.version=<version>"
+//
+// It falls back to "dev" when no value is supplied (e.g. `go run`).
+var version = "dev"
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprint(os.Stderr, usage)
@@ -60,6 +67,10 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 			os.Exit(1)
 		}
+	case "version":
+		// Print the build version. No config or Discord connection needed.
+		fmt.Println(version)
+		os.Exit(0)
 	default:
 		// Default entrypoint: run the Discord bot from the given config.
 		if err := bot.RunBot(arg("start", 2)); err != nil {
@@ -106,6 +117,9 @@ usage:
 
   discord-runner list <config.json>
       List the slash commands defined in the config without connecting.
+
+  discord-runner version
+      Print the build version.
 `
 
 const configUsage = `config commands:

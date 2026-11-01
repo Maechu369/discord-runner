@@ -49,6 +49,8 @@ make build
 ./discord-runner config flatten config.json
 # 設定が定義するコマンドを一覧表示（オフライン。Discord には接続しない）
 ./discord-runner list config.json
+# ビルド版数を出力
+./discord-runner version
 ```
 
 `config flatten` が出力する `token` の値はマスクされます（`Bot ` 接頭辞と文字数のみ表示し、秘密部分は非表示）。

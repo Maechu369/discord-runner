@@ -52,3 +52,12 @@ func TestConfigArg(t *testing.T) {
 		})
 	})
 }
+
+// TestVersionDefault documents the fallback contract: when the build does not
+// inject a version (e.g. `go test`/`go run`), `version` must be "dev" so the
+// `discord-runner version` command never prints an empty string.
+func TestVersionDefault(t *testing.T) {
+	if version != "dev" {
+		t.Fatalf("version default = %q, want %q", version, "dev")
+	}
+}
