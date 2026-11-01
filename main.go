@@ -17,14 +17,14 @@ var version = "dev"
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprint(os.Stderr, usage)
+		fmt.Fprint(os.Stderr, usage())
 		os.Exit(2)
 	}
 
 	switch os.Args[1] {
 	case "--help", "-h":
 		// Show usage. Same text as running without arguments.
-		fmt.Fprint(os.Stdout, usage)
+		fmt.Fprint(os.Stdout, usage())
 		os.Exit(0)
 	case "start":
 		// Run the Discord bot from the given config.
@@ -95,13 +95,18 @@ func configArg(name string, idx int) (string, error) {
 func arg(name string, idx int) string {
 	p, err := configArg(name, idx)
 	if err != nil {
-		fmt.Fprint(os.Stderr, usage)
+		fmt.Fprint(os.Stderr, usage())
 		os.Exit(2)
 	}
 	return p
 }
 
-const usage = `discord-runner - a Discord bot that runs local commands
+// usage returns the command help text, including the build version. The
+// version is injected at build time via -ldflags and falls back to "dev".
+func usage() string {
+	return fmt.Sprintf(`discord-runner - a Discord bot that runs local commands
+
+version: %s
 
 usage:
   discord-runner [start] <config.json>
@@ -120,7 +125,8 @@ usage:
 
   discord-runner version
       Print the build version.
-`
+`, version)
+}
 
 const configUsage = `config commands:
 

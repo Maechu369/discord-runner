@@ -56,7 +56,7 @@ make build
 
 `config flatten` never prints the token itself: it shows the `Bot ` prefix and the character count, but masks the secret.
 
-`--help` / `-h` prints the same usage.
+`--help` / `-h` prints the same usage, including the build version.
 
 ## Config file
 
