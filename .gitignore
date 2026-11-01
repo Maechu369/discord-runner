@@ -1,5 +1,6 @@
 .pre-commit-config.yaml
 discord-runner
+discord-runner-arm64
 # Ignore all JSON files.
 # Exception: the init template must stay tracked.
 *.json
