@@ -197,6 +197,7 @@ func TestLoadConfigErrors(t *testing.T) {
 		"missing token_file":   `{"client_id": "c", "scripts": {}}`,
 		"missing client":       `{"token_file": "token.txt", "scripts": {}}`,
 		"no scripts":           `{"token_file": "token.txt", "client_id": "c"}`,
+		"list script reserved": `{"token_file": "token.txt", "client_id": "c", "scripts": {"list": {"cmd": ["echo"]}}}`,
 		"negative timeout":     `{"token_file": "token.txt", "client_id": "c", "scripts": {"s": {"cmd": ["echo"], "timeout": -1}}}`,
 		"token file not found": `{"token_file": "missing.txt", "client_id": "c", "scripts": {"s": {"cmd": ["echo"]}}}`,
 		"empty token file":     fmt.Sprintf(`{"token_file": %q, "client_id": "c", "scripts": {"s": {"cmd": ["echo"]}}}`, emptyToken),

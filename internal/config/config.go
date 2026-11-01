@@ -61,6 +61,9 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, fmt.Errorf("config %q: no scripts defined", path)
 	}
 	for name, s := range cfg.Scripts {
+		if name == "list" {
+			return nil, fmt.Errorf("config %q: script name %q is reserved for the built-in /list command", path, name)
+		}
 		if s.Timeout < 0 {
 			return nil, fmt.Errorf("config %q: script %q timeout must not be negative", path, name)
 		}
