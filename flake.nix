@@ -39,6 +39,14 @@
                 entry = "${pkgs.git-secrets}/bin/git-secrets scan";
                 pass_filenames = false;
               };
+              no-commit-to-main = {
+                enable = true;
+                name = "no-commit-to-main";
+                description = "Prevent commits to the main branch";
+                entry = "bash -c 'test \"$(git rev-parse --abbrev-ref HEAD)\" != main'";
+                pass_filenames = false;
+                always_run = true;
+              };
             };
           };
           devShells.default = pkgs.mkShell {
