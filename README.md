@@ -2,7 +2,7 @@
 
 🌐 [日本語](docs/README.ja.md)
 
-A Discord bot that runs **local commands** from slash commands.
+A Discord bot that runs **local commands** from slash commands (the `/` commands you type in Discord).
 Each script defined in the config file registers its own slash command, letting you run commands like `ls` or `git status` from Discord and receive the output as a message.
 
 ## Features
