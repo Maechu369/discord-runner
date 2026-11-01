@@ -1,13 +1,17 @@
 BINARY := discord-runner
 CONFIG ?= config.json
 
-.PHONY: all build test race vet fmt fmtcheck check run init flatten clean help
+.PHONY: all build build-arm64 test race vet fmt fmtcheck check run init flatten clean help
 
 all: check build
 
 ## build: Build the binary
 build:
 	go build -o $(BINARY) .
+
+## build-arm64: Build an arm64 binary
+build-arm64:
+	CGO_ENABLED=0 GOARCH=arm64 go build -o $(BINARY)-arm64 .
 
 ## test: Run all tests
 test:
@@ -55,6 +59,6 @@ clean:
 ## help: Show this help
 help:
 	@C=$$(printf '\033[36m'); R=$$(printf '\033[0m'); \
-	grep -hE '^## [a-zA-Z_-]+:' $(MAKEFILE_LIST) \
+	grep -hE '^## [a-zA-Z0-9_-]+' $(MAKEFILE_LIST) \
 		| sort \
 		| awk -v c="$$C" -v r="$$R" 'BEGIN{FS=": "}{n=$$1; sub(/^## /,"",n); printf "  %s%-10s%s  %s\n", c, n, r, $$2}'
