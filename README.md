@@ -145,3 +145,7 @@ nix develop   # dev shell with hooks
 ## License
 
 This project is licensed under the terms of the [MIT license](LICENSE).
+
+## Notes
+
+This project was created by a Go beginner using AI-driven development. The AI used was Ornith 1.5 35B-A3B, and the harness was oh-my-pi.
