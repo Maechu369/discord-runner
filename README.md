@@ -14,6 +14,10 @@ Each script defined in the config file registers its own slash command, letting 
 - `/list` is a built-in slash command that lists every configured command, plus the command each one runs
 - `config init` generates a config from a template; `config flatten` prints the config as `key=value` lines
 
+## Purpose
+
+This app is purpose-built for one job: receiving a slash command and returning its output as a Discord message. If you don't need to receive requests from Discord users, consider alternatives such as [ntfy.sh](https://ntfy.sh) or a plain Discord **Incoming Webhook** instead.
+
 ## Requirements
 
 - Go 1.26 or later
