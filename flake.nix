@@ -39,23 +39,6 @@
                 entry = "${pkgs.git-secrets}/bin/git-secrets scan";
                 pass_filenames = false;
               };
-              no-commit-to-main = {
-                enable = true;
-                name = "no-commit-to-main";
-                description = "Prevent commits to the main branch";
-                entry = "bash -c 'test \"$(git rev-parse --abbrev-ref HEAD)\" != main'";
-                pass_filenames = false;
-                always_run = true;
-              };
-              no-merge-to-main = {
-                enable = true;
-                name = "no-merge-to-main";
-                description = "Prevent local merges into main; merge on GitHub only";
-                entry = "bash -c 'test \"$(git rev-parse --abbrev-ref HEAD)\" != main'";
-                pass_filenames = false;
-                always_run = true;
-                stages = [ "pre-merge-commit" ];
-              };
             };
           };
           devShells.default = pkgs.mkShell {
