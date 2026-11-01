@@ -62,6 +62,25 @@ func TestRunScriptRunsInCwd(t *testing.T) {
 	}
 }
 
+func TestRunScriptRunsInCwdDefault(t *testing.T) {
+	dir := t.TempDir()
+	marker := filepath.Join(dir, "marker.txt")
+	if err := os.WriteFile(marker, []byte("here"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// With cwd omitted, the command runs in the process's current working
+	// directory (t.Chdir sets it here for the duration of this test).
+	t.Chdir(dir)
+	out, err := runScript(config.Script{Cmd: []string{"cat", "marker.txt"}})
+	if err != nil {
+		t.Fatalf("runScript: %v", err)
+	}
+	if got := strings.TrimSpace(out); got != "here" {
+		t.Errorf("out = %q, want %q", got, "here")
+	}
+}
+
 func TestRunScriptEmptyCmd(t *testing.T) {
 	if _, err := runScript(config.Script{Cmd: nil}); err == nil {
 		t.Fatal("expected error for empty cmd")
