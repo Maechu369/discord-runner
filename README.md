@@ -7,12 +7,10 @@ Each script defined in the config file registers its own slash command, letting 
 
 ## Features
 
-- Per-slash-command working directory, arguments, and timeout
-- `~` expands to the home directory
-- Returns command output as a fenced code block (truncated automatically beyond 2000 characters)
-- Kills the command on timeout; shows exit status and stderr on failure
-- `/list` is a built-in slash command that lists every configured command, plus the command each one runs
-- `config init` generates a config from a template; `config flatten` prints the config as `key=value` lines
+- Per slash command, the working directory, arguments, and timeout can be set independently
+- `/list` is a built-in slash command that lists every configured command, plus the command it runs
+- Command output is returned as a fenced code block, automatically truncated beyond Discord's 2000 characters
+- Commands are killed on timeout; failures show the exit status and stderr
 
 ## Purpose
 
