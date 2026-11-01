@@ -81,6 +81,28 @@ func TestRunScriptRunsInCwdDefault(t *testing.T) {
 	}
 }
 
+func TestRunScriptRunsInRelativeCwd(t *testing.T) {
+	base := t.TempDir()
+	// marker lives in a relative subdirectory: <base>/foo/bar/marker.txt
+	marker := filepath.Join(base, "foo", "bar", "marker.txt")
+	if err := os.MkdirAll(filepath.Dir(marker), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(marker, []byte("here"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	// A relative cwd is resolved from the process's current working directory.
+	t.Chdir(base)
+	out, err := runScript(config.Script{Cwd: "foo/bar", Cmd: []string{"cat", "marker.txt"}})
+	if err != nil {
+		t.Fatalf("runScript: %v", err)
+	}
+	if got := strings.TrimSpace(out); got != "here" {
+		t.Errorf("out = %q, want %q", got, "here")
+	}
+}
+
 func TestRunScriptEmptyCmd(t *testing.T) {
 	if _, err := runScript(config.Script{Cmd: nil}); err == nil {
 		t.Fatal("expected error for empty cmd")
