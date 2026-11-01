@@ -133,17 +133,6 @@ Go 1.26 or later is required. The dev shell is provided via the Nix flake and en
 nix develop   # dev shell with hooks
 ```
 
-## Project structure
-
-```
-.
-├── main.go                          # CLI entrypoint
-├── internal/
-│   ├── config/                      # Config load, init, and flatten
-│   └── bot/                         # Discord bot behavior
-└── Makefile
-```
-
 ## License
 
 This project is licensed under the terms of the [MIT license](LICENSE).
