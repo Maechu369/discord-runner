@@ -5,14 +5,21 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/build.yml':
         - 'actions/checkout@v4.4.0'
+        - 'actions/download-artifact@v4.3.0'
         - 'actions/setup-go@v5.6.0'
         - 'actions/upload-artifact@v4.6.2'
+        - 'softprops/action-gh-release@v1'
 dependencies:
     'actions/checkout@v4.4.0':
         ref: 'v4.4.0'
         commit: 'sha1-11d5960a326750d5838078e36cf38b85af677262'
         owner_id: 44036562
         repo_id: 197814629
+    'actions/download-artifact@v4.3.0':
+        ref: 'v4.3.0'
+        commit: 'sha1-d3f86a106a0bac45b974a628896c90dbdf5c8093'
+        owner_id: 44036562
+        repo_id: 192626254
     'actions/setup-go@v5.6.0':
         ref: 'v5.6.0'
         commit: 'sha1-40f1582b2485089dde7abd97c1529aa768e1baff'
@@ -23,3 +30,8 @@ dependencies:
         commit: 'sha1-ea165f8d65b6e75b540449e92b4886f43607fa02'
         owner_id: 44036562
         repo_id: 192625955
+    'softprops/action-gh-release@v1':
+        ref: 'v1'
+        commit: 'sha1-de2c0eb89ae2a093876385947365aca7b0e5f844'
+        owner_id: 2242
+        repo_id: 204253808
