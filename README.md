@@ -9,9 +9,7 @@ Each script defined in the config file registers its own slash command, letting 
 
 - Per slash command, the working directory, arguments, and timeout can be set independently
 - `/list` is a built-in slash command that lists every configured command, plus the command it runs
-- Command output is returned as a fenced code block, automatically truncated beyond Discord's 2000 characters
-- Commands are killed on timeout; failures show the exit status and stderr
-
+- Command output is returned as a fenced code block, automatically truncated if it exceeds Discord's 2000 character limit
 ## Purpose
 
 This app is purpose-built for one job: receiving a slash command and returning its output as a Discord message. If you don't need to receive requests from Discord users, consider alternatives such as [ntfy.sh](https://ntfy.sh) or a plain Discord **Incoming Webhook** instead.
@@ -77,8 +75,8 @@ Or download a prebuilt binary from the [latest release](https://github.com/Maech
 
 ## Config file
 
-It uses JSON. It requires a `token_file` pointing at a file that holds the bot
-token, a `client_id`, and at least one script.
+It uses JSON. It requires a `token_file` (a path to a file containing the bot
+token), a `client_id`, and at least one script.
 You can generate one with `config init`; the template embedded in this binary is also available in this repo.
 
 The `token_file` points at a separate file that holds your bot token, so the
@@ -112,7 +110,7 @@ The token is read from that file when the bot starts and is never written back.
 | --- | --- |
 | `token_file` | Path to a file containing the bot token ([get it from the official docs](https://docs.discord.com/developers/quick-start/getting-started)) |
 | `client_id` | Discord application client ID ([how to find it](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
-| `guild_id` | Optional Discord server ID. Empty registers commands globally (all servers); set it to register commands only in that server ([how to find it](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
+ | `guild_id` | Optional Discord server ID. Empty registers commands globally (all servers); set it to register commands only in that server ([how to find it](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
 | `scripts` | Map of slash command name to script |
 
 Each script:

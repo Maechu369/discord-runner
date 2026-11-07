@@ -8,7 +8,7 @@ Discord のスラッシュコマンド（Discord で `/` から入力するコ�
 
 - スラッシュコマンドごとに、実行ディレクトリ・引数・タイムアウトを個別に設定可能
 - `/list` は設定されたスラッシュコマンドをすべて一覧表示する組み込みスラッシュコマンド
-- コマンドの標準出力をコードブロックとして返す（2000 文字超で自動的に切り詰め）
+- コマンドの標準出力をコードブロックとして返す（2000 文字を超えると自動的に省略）
 - タイムアウト超過時は強制終了、失敗時はステータスと標準エラーを表示
 
 ## 対象と範囲
@@ -36,7 +36,7 @@ make build
 
 ## セットアップ
 
-ビルドで単一のバイナリが作られます。`PATH` 上に置どこからでも実行できます。
+ビルドで単一のバイナリが生成されます。`PATH` に配置することでどこからでも実行できます。
 
 ```sh
 # $GOBIN（既定: ~/go/bin）にインストール
@@ -49,7 +49,7 @@ go install .
 sudo install -m 755 discord-runner /usr/local/bin/
 ```
 
-プリビルドのバイナリが必要な場合は、[latest release](https://github.com/Maechu369/discord-runner/releases/latest) からダウンロードできます。
+ビルド済みのバイナリが必要な場合は、[latest release](https://github.com/Maechu369/discord-runner/releases/latest) からダウンロードできます。
 
 ## 使い方
 
@@ -82,7 +82,7 @@ JSON 形式です。`token_file`（ボットのトークンを含むファイル
 `token_file` で、ボットのトークンを含む別のファイルを指定します。トークン自体は
 設定ファイルに書き込まれないので安全です。Discord アプリの *Bot* ページで取得した
 トークンをそのままそのファイルに書いてください。`Bot ` 接頭辞は任意で、起動時に
-自動で付されます。`echo` が追加する末尾の改行を含む前後の空白は除去されるので、
+自動で付与されます。`echo` が追加する末尾の改行を含む前後の空白は除去されるので、
 トークンだけを書けば十分です：
 
 ```sh
@@ -110,7 +110,7 @@ echo "MII3.YourTokenHere.example" > token.txt
 | --- | --- |
 | `token_file` | ボットのトークンを含むファイルへのパス ([公式ドキュメントで確認](https://docs.discord.com/developers/quick-start/getting-started)) |
 | `client_id` | Discord アプリケーションのクライアント ID ([確認方法](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
-| `guild_id` | 任意の Discord サーバ ID。空ならグローバル（全サーバ）に登録され、サーバ ID を指定するとそのサーバに登録されます（[取得方法](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
+ | `guild_id` | 任意の Discord サーバ ID。空ならグローバル（全サーバ）に登録され、サーバ ID を指定するとそのサーバに登録されます ([取得方法](https://support-dev.discord.com/hc/en-us/articles/360028717192-Where-can-I-find-my-Application-Team-Server-ID)) |
 | `scripts` | スラッシュコマンド名 → スクリプトのマップ |
 
 各スクリプト:
@@ -144,7 +144,7 @@ Makefile を使います。
 | `make fmt` | gofmt で整形 |
 | `make clean` | バイナリを削除 |
 
-Go 1.26 以降が必要です。開発シェルは Nix フレイク経由で用意でき、`gofmt`・`nixfmt`・`git-secrets` の pre-commit フックが有効になります。
+Go 1.26 以降が必要です。開発シェルは Nix flake経由で用意でき、`gofmt`・`nixfmt`・`git-secrets` の pre-commit フックが有効になります。
 
 ```sh
 nix develop   # フック付きの開発シェル
