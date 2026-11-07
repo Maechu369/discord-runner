@@ -22,7 +22,7 @@ This app is purpose-built for one job: receiving a slash command and returning i
 - A Discord application (bot token and client ID)
 - Nix (recommended for the dev shell, optional)
 
-## Installation
+## Build
 
 ```sh
 go build -o discord-runner .
@@ -34,6 +34,23 @@ Or build from the Nix dev shell.
 nix develop
 make build
 ```
+
+## Setup
+
+Building produces a single binary. Put it on your `PATH` to run it from anywhere.
+
+```sh
+# Install into $GOBIN (default: ~/go/bin)
+go install .
+```
+
+`go install .` writes `discord-runner` to `$GOBIN`. Make sure that directory is on your `PATH`, or place the binary directly:
+
+```sh
+sudo install -m 755 discord-runner /usr/local/bin/
+```
+
+Or download a prebuilt binary from the [latest release](https://github.com/Maechu369/discord-runner/releases/latest).
 
 ## Usage
 

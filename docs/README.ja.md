@@ -21,7 +21,7 @@ Discord のスラッシュコマンド（Discord で `/` から入力するコ�
 - Discord のアプリケーション（ボットトークン、クライアント ID）
 - Nix（開発シェルの使用を推奨。任意）
 
-## インストール
+## ビルド
 
 ```sh
 go build -o discord-runner .
@@ -33,6 +33,23 @@ go build -o discord-runner .
 nix develop
 make build
 ```
+
+## セットアップ
+
+ビルドで単一のバイナリが作られます。`PATH` 上に置どこからでも実行できます。
+
+```sh
+# $GOBIN（既定: ~/go/bin）にインストール
+go install .
+```
+
+`go install .` は `discord-runner` を `$GOBIN` に配置します。そのディレクトリが `PATH` に入っていることを確認するか、直接配置してください：
+
+```sh
+sudo install -m 755 discord-runner /usr/local/bin/
+```
+
+プリビルドのバイナリが必要な場合は、[latest release](https://github.com/Maechu369/discord-runner/releases/latest) からダウンロードできます。
 
 ## 使い方
 
